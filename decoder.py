@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import numpy as np
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 pretrained_model = "fnlp/bart-base-chinese"
 save_model_path = "./best_weight.pth"
 device = "cuda" if torch.cuda.is_available() else "cpu"

@@ -8,11 +8,11 @@ from data_helper import QAGDataSet
 from torch.utils.data import DataLoader
 from torch.nn import CrossEntropyLoss
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 Lambda = 0.5
-batch_size = 64
-epochs = 50
+batch_size = 100
+epochs = 5
 lr = 2e-5
 vocab_size=21128
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -32,9 +32,6 @@ def train(model, Lambda):
             batch = [d.to(device) for d in data]
             true_start_id, true_end_id, true_decode_id = batch[4:]
             start_logits, end_logits, decoder_out = model(*batch[:4])
-
-            # print(true_start_id)
-            # print(true_end_id)
 
             true_decode_id = true_decode_id.view(-1)
             decoder_out = decoder_out.view(-1, vocab_size)
@@ -57,16 +54,16 @@ if __name__ == '__main__':
     model.train()
     model.to(device)
 
-    # step1:  Fine-tune question generation
+    print("step1:  Fine-tune question generation .... ")
     Lambda = 1
     train(model, Lambda)
 
-    # step2:  Fine-tune answer prediction
+    print("step2:  Fine-tune answer prediction ..... ")
     Lambda = 0
     model.load_state_dict(torch.load(save_model_path))
     train(model, Lambda)
 
-    # step3: Fine-tune the OneStop model
+    print("step3: Fine-tune the OneStop model .... ")
     Lambda = 0.5
     model.load_state_dict(torch.load(save_model_path))
     train(model, Lambda)
